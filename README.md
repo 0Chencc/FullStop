@@ -109,6 +109,24 @@ FullStop 懂得这一点。当同一首歌存在多个版本时，我们的**加
 
 ---
 
+## 不干扰 (Dynamic Minimization)
+
+音乐是背景，不是主角。当你需要专注于工作、写作或阅读时，一个全尺寸的播放器反而成了干扰。
+
+FullStop 的**迷你模式**让播放器化身为屏幕角落的一抹优雅——只保留最核心的播放控制，不抢夺你的注意力。
+
+<div align="center">
+  <img src="img/miniShow.png" width="380" alt="Mini Player Mode">
+</div>
+
+点击标题栏的画中画按钮，窗口瞬间收缩。专辑封面、歌曲信息、播放控制，一切恰到好处。需要时，一键还原。
+
+<div align="center">
+  <img src="img/miniShow_max.png" width="500" alt="Normal Mode">
+</div>
+
+**你的屏幕，你的节奏。**
+
 ## 开始使用
 
 ### 准备工作
