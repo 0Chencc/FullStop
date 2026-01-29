@@ -109,6 +109,26 @@ We've implemented a **True Shuffle** algorithm ensuring songs from the same albu
 
 ---
 
+## Stay Out of Your Way (Dynamic Minimization)
+
+Music is the backdrop, not the spotlight. When you need to focus on work, writing, or reading, a full-sized player becomes a distraction.
+
+FullStop's **Mini Mode** transforms the player into an elegant whisper in the corner of your screen—keeping only the essential playback controls, never stealing your attention.
+
+<div align="center">
+  <img src="img/miniShow.png" width="380" alt="Mini Player Mode">
+</div>
+
+Click the picture-in-picture button in the title bar, and the window shrinks instantly. Album art, track info, playback controls—everything just right. Need more? One click to restore.
+
+<div align="center">
+  <img src="img/miniShow_max.png" width="500" alt="Normal Mode">
+</div>
+
+**Your screen, your rhythm.**
+
+---
+
 ## Getting Started
 
 ### Prerequisites
