@@ -277,7 +277,7 @@ jobs:
           VERSION="${{ needs.validate.outputs.version }}"
           APP_FILE=$(ls -d build/macos/Build/Products/Release/*.app | head -1)
           APP_BASENAME=$(basename "$APP_FILE")
-          DMG_NAME="${{ env.APP_NAME }}-${VERSION}-macos-universal.dmg"
+          DMG_NAME="${{ env.APP_NAME }}-${VERSION}-macos.dmg"
 
           mkdir -p release
           mkdir -p dmg_contents
@@ -290,15 +290,6 @@ jobs:
             "release/${DMG_NAME}"
 
           rm -rf dmg_contents
-
-      - name: Create ZIP archive
-        run: |
-          VERSION="${{ needs.validate.outputs.version }}"
-          mkdir -p release
-          APP_FILE=$(ls -d build/macos/Build/Products/Release/*.app | head -1)
-          APP_BASENAME=$(basename "$APP_FILE")
-          cd build/macos/Build/Products/Release/
-          zip -r "../../../../../release/${{ env.APP_NAME }}-${VERSION}-macos-universal.zip" "$APP_BASENAME"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v6
@@ -475,9 +466,6 @@ jobs:
       - name: Build Android APK (Release - unsigned)
         run: flutter build apk --release --obfuscate --split-debug-info=build/debug-info/android --build-name=${{ needs.validate.outputs.version }} --build-number=${{ github.run_number }}
 
-      - name: Build Android App Bundle (Release - unsigned)
-        run: flutter build appbundle --release --obfuscate --split-debug-info=build/debug-info/android --build-name=${{ needs.validate.outputs.version }} --build-number=${{ github.run_number }}
-
       - name: Rename and organize artifacts
         run: |
           VERSION="${{ needs.validate.outputs.version }}"
@@ -485,9 +473,6 @@ jobs:
 
           cp build/app/outputs/flutter-apk/app-release.apk \
              "release/${{ env.APP_NAME }}-${VERSION}-android.apk"
-
-          cp build/app/outputs/bundle/release/app-release.aab \
-             "release/${{ env.APP_NAME }}-${VERSION}-android.aab"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v6
@@ -604,6 +589,25 @@ jobs:
           sha256sum * > SHA256SUMS.txt || true
           cat SHA256SUMS.txt
 
+      - name: Generate release notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ needs.validate.outputs.tag }}"
+          PREV_TAG=$(git tag --sort=-v:refname | grep -v "^${TAG}$" | head -1)
+
+          {
+            echo "## What's Changed"
+            if [ -n "$PREV_TAG" ]; then
+              git log "${PREV_TAG}..${TAG}" --merges --pretty=format:"%s" \
+                | grep -oP '#\K\d+' \
+                | while read -r NUM; do
+                    gh pr view "$NUM" --json title,number,author \
+                      --jq '"* \(.title) #\(.number) by @\(.author.login)"' 2>/dev/null
+                  done
+            fi
+          } > release_notes.md
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
@@ -611,7 +615,7 @@ jobs:
           tag_name: ${{ needs.validate.outputs.tag }}
           draft: false
           prerelease: ${{ contains(needs.validate.outputs.tag, '-beta') || contains(needs.validate.outputs.tag, '-alpha') || contains(needs.validate.outputs.tag, '-rc') }}
-          generate_release_notes: true
+          body_path: release_notes.md
           files: |
             release/*
         env:
